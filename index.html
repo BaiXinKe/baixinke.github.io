@@ -171,20 +171,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -224,6 +224,122 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/03/21/TCP%E5%88%9D%E6%AD%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Chauncy">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chauncy's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/21/TCP%E5%88%9D%E6%AD%A5/" class="post-title-link" itemprop="url">TCP初步</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-03-21 16:58:57 / Modified: 17:56:24" itemprop="dateCreated datePublished" datetime="2021-03-21T16:58:57+08:00">2021-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><h4 id="ARQ和重传"><a href="#ARQ和重传" class="headerlink" title="ARQ和重传"></a>ARQ和重传</h4><h5 id="停等协议"><a href="#停等协议" class="headerlink" title="停等协议"></a>停等协议</h5><ol>
+<li>ACK等待时间</li>
+<li>ACK丢失， 超过等待时间对端重传</li>
+<li>错误分组， 不发送ACK，超过等待时间，对端重传。</li>
+</ol>
+<hr>
+<h4 id="分组窗口和滑动窗口"><a href="#分组窗口和滑动窗口" class="headerlink" title="分组窗口和滑动窗口"></a>分组窗口和滑动窗口</h4><p><strong>分组窗口</strong>：已发送但未完成确认的分组集合—其中的分组数量称之为窗口大小。</p>
+<p>窗口前部的分组被确认，分组进行滑动，此时分组中包含已发送未确认和一个新的未发送但马上发送的分组，拥有这种操作所以称之为<strong>滑动窗口</strong>。</p>
+<p>滑动窗口-发送方：可释放分组、等待ACK分组以及未发送分组。</p>
+<p>滑动窗口-接收方：已接受分组、已确认分组、期望分组及内存限制被丢弃分组。</p>
+<h4 id="变量窗口：流量控制和拥塞控制"><a href="#变量窗口：流量控制和拥塞控制" class="headerlink" title="变量窗口：流量控制和拥塞控制"></a>变量窗口：流量控制和拥塞控制</h4><h5 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h5><p>发送接收方速度不对等。</p>
+<p>基于速率：发送发指定某个速率，确保数据发送速率不超过此速率</p>
+<p>基于窗口：窗口大小随时间变动-通知接收方<em>窗口通告</em>。发送方边滑动边改边大小。</p>
+<p>接收方窗口通告夹杂发送方窗口大小时，发送方速率被限制不能超越接收方。</p>
+<h5 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h5><p>使分组发送速度降低以适应链路状态。</p>
+<h4 id="设置超时重传"><a href="#设置超时重传" class="headerlink" title="设置超时重传"></a>设置超时重传</h4><p>往返时间估计</p>
+<h3 id="TCP引入"><a href="#TCP引入" class="headerlink" title="TCP引入"></a>TCP引入</h3><h4 id="TCP服务模型"><a href="#TCP服务模型" class="headerlink" title="TCP服务模型"></a>TCP服务模型</h4><p>面向连接、可靠字节流</p>
+<p>字节流： 无记录标志或消息边界</p>
+<h4 id="TCP中的可靠性"><a href="#TCP中的可靠性" class="headerlink" title="TCP中的可靠性"></a>TCP中的可靠性</h4><p>TCP将应用程序数据字节流转化为IP可携带分组<strong>组包</strong>。</p>
+<p>分组包含序号，序号指明分组第一个字节在整个字节流中的偏移。一般大小不会被IP层分片。</p>
+<p>TCP给IP的称为<strong>报文段</strong></p>
+<p>TCP有一个强制校验和，校验和计算伪头部部分。</p>
+<p>发送报文后设置计时器，等待接收方确认。计时器每窗口一个，ACK后更新，超时后重传。</p>
+<p>累计ACK。确认<em>N</em>的ACK包含<em>N</em>之前都被确认的意思（不包括<em>N</em>）。</p>
+<p>数据双向流动-全双工。维持自己端序列号。</p>
+<h3 id="TCP头部"><a href="#TCP头部" class="headerlink" title="TCP头部"></a>TCP头部</h3><p>20-60字节。不带选项20字节</p>
+<p>源端口，目的端口，序列号，确认号，头部长度，保留，CWR，ECE，URG，ACK，PSH，RST，SYN，FIN，窗口大小，校验和，紧急指针以及选项</p>
+<p>TCP链接组成—四元组</p>
+<p>序列号-标识发送端到接收端数据流。确认号值为期待的下一个序列号。</p>
+<p>建立新连接，发送SYN报文，序列号为本次连接使用的第一个序列号。后续序列号和对端返回ACK号在该方向递增。</p>
+<p>ISN随机。</p>
+<p>CWR-拥塞窗口减</p>
+<p>ECH-ECN回显（发送方接收到了一个更早的窗口通告）</p>
+<p>URG-紧急（紧急指针字段有效）</p>
+<p>ACK-确认</p>
+<p>PSH-推送</p>
+<p>RST-重置链接</p>
+<p>SYN-初始化一个链接的同步序号</p>
+<p>FIN-该报文段发送方已停止向对方发送数据。</p>
+<p>窗口大小-通告窗口大小，字节数，从ACK号指定，接收方想要接收的字节开始。16位最大65535，可通过窗口缩放选项进行缩放。</p>
+<p>校验和</p>
+<p>紧急指针-URG位设置有效</p>
+<p>选项字段-最常见的为MSS（最大段大小）。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 

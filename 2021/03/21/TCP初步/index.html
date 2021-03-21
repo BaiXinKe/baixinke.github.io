@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chauncy.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="引言ARQ和重传停等协议 ACK等待时间 ACK丢失， 超过等待时间对端重传 错误分组， 不发送ACK，超过等待时间，对端重传。   分组窗口和滑动窗口分组窗口：已发送但未完成确认的分组集合—其中的分组数量称之为窗口大小。 窗口前部的分组被确认，分组进行滑动，此时分组中包含已发送未确认和一个新的未发送但马上发送的分组，拥有这种操作所以称之为滑动窗口。 滑动窗口-发送方：可释放分组、等待ACK分组以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP初步">
+<meta property="og:url" content="http://chauncy.github.io/2021/03/21/TCP%E5%88%9D%E6%AD%A5/index.html">
+<meta property="og:site_name" content="Chauncy&#39;s blog">
+<meta property="og:description" content="引言ARQ和重传停等协议 ACK等待时间 ACK丢失， 超过等待时间对端重传 错误分组， 不发送ACK，超过等待时间，对端重传。   分组窗口和滑动窗口分组窗口：已发送但未完成确认的分组集合—其中的分组数量称之为窗口大小。 窗口前部的分组被确认，分组进行滑动，此时分组中包含已发送未确认和一个新的未发送但马上发送的分组，拥有这种操作所以称之为滑动窗口。 滑动窗口-发送方：可释放分组、等待ACK分组以">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-03-21T08:58:57.000Z">
+<meta property="article:modified_time" content="2021-03-21T09:56:24.150Z">
+<meta property="article:author" content="Chauncy">
+<meta property="article:tag" content="tcp">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://chauncy.github.io/2021/03/21/TCP%E5%88%9D%E6%AD%A5/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>TCP初步 | Chauncy's blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Chauncy's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ARQ%E5%92%8C%E9%87%8D%E4%BC%A0"><span class="nav-number">1.1.</span> <span class="nav-text">ARQ和重传</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%81%9C%E7%AD%89%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.1.1.</span> <span class="nav-text">停等协议</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E7%AA%97%E5%8F%A3%E5%92%8C%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3"><span class="nav-number">1.2.</span> <span class="nav-text">分组窗口和滑动窗口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E7%AA%97%E5%8F%A3%EF%BC%9A%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E5%92%8C%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="nav-number">1.3.</span> <span class="nav-text">变量窗口：流量控制和拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">1.3.1.</span> <span class="nav-text">流量控制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="nav-number">1.3.2.</span> <span class="nav-text">拥塞控制</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E8%B6%85%E6%97%B6%E9%87%8D%E4%BC%A0"><span class="nav-number">1.4.</span> <span class="nav-text">设置超时重传</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E5%BC%95%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">TCP引入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E6%9C%8D%E5%8A%A1%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">TCP服务模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E4%B8%AD%E7%9A%84%E5%8F%AF%E9%9D%A0%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text">TCP中的可靠性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E5%A4%B4%E9%83%A8"><span class="nav-number">3.</span> <span class="nav-text">TCP头部</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Chauncy"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Chauncy</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/baixinke" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;baixinke" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:baixinke@qq.com" title="E-Mail → mailto:baixinke@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+        <div class="code-wars-label">
+          <img src="https://www.codewars.com/users/BaiXinKe/badges/micro"/>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/03/21/TCP%E5%88%9D%E6%AD%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Chauncy">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chauncy's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TCP初步
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-03-21 16:58:57 / Modified: 17:56:24" itemprop="dateCreated datePublished" datetime="2021-03-21T16:58:57+08:00">2021-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><h4 id="ARQ和重传"><a href="#ARQ和重传" class="headerlink" title="ARQ和重传"></a>ARQ和重传</h4><h5 id="停等协议"><a href="#停等协议" class="headerlink" title="停等协议"></a>停等协议</h5><ol>
+<li>ACK等待时间</li>
+<li>ACK丢失， 超过等待时间对端重传</li>
+<li>错误分组， 不发送ACK，超过等待时间，对端重传。</li>
+</ol>
+<hr>
+<h4 id="分组窗口和滑动窗口"><a href="#分组窗口和滑动窗口" class="headerlink" title="分组窗口和滑动窗口"></a>分组窗口和滑动窗口</h4><p><strong>分组窗口</strong>：已发送但未完成确认的分组集合—其中的分组数量称之为窗口大小。</p>
+<p>窗口前部的分组被确认，分组进行滑动，此时分组中包含已发送未确认和一个新的未发送但马上发送的分组，拥有这种操作所以称之为<strong>滑动窗口</strong>。</p>
+<p>滑动窗口-发送方：可释放分组、等待ACK分组以及未发送分组。</p>
+<p>滑动窗口-接收方：已接受分组、已确认分组、期望分组及内存限制被丢弃分组。</p>
+<h4 id="变量窗口：流量控制和拥塞控制"><a href="#变量窗口：流量控制和拥塞控制" class="headerlink" title="变量窗口：流量控制和拥塞控制"></a>变量窗口：流量控制和拥塞控制</h4><h5 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h5><p>发送接收方速度不对等。</p>
+<p>基于速率：发送发指定某个速率，确保数据发送速率不超过此速率</p>
+<p>基于窗口：窗口大小随时间变动-通知接收方<em>窗口通告</em>。发送方边滑动边改边大小。</p>
+<p>接收方窗口通告夹杂发送方窗口大小时，发送方速率被限制不能超越接收方。</p>
+<h5 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h5><p>使分组发送速度降低以适应链路状态。</p>
+<h4 id="设置超时重传"><a href="#设置超时重传" class="headerlink" title="设置超时重传"></a>设置超时重传</h4><p>往返时间估计</p>
+<h3 id="TCP引入"><a href="#TCP引入" class="headerlink" title="TCP引入"></a>TCP引入</h3><h4 id="TCP服务模型"><a href="#TCP服务模型" class="headerlink" title="TCP服务模型"></a>TCP服务模型</h4><p>面向连接、可靠字节流</p>
+<p>字节流： 无记录标志或消息边界</p>
+<h4 id="TCP中的可靠性"><a href="#TCP中的可靠性" class="headerlink" title="TCP中的可靠性"></a>TCP中的可靠性</h4><p>TCP将应用程序数据字节流转化为IP可携带分组<strong>组包</strong>。</p>
+<p>分组包含序号，序号指明分组第一个字节在整个字节流中的偏移。一般大小不会被IP层分片。</p>
+<p>TCP给IP的称为<strong>报文段</strong></p>
+<p>TCP有一个强制校验和，校验和计算伪头部部分。</p>
+<p>发送报文后设置计时器，等待接收方确认。计时器每窗口一个，ACK后更新，超时后重传。</p>
+<p>累计ACK。确认<em>N</em>的ACK包含<em>N</em>之前都被确认的意思（不包括<em>N</em>）。</p>
+<p>数据双向流动-全双工。维持自己端序列号。</p>
+<h3 id="TCP头部"><a href="#TCP头部" class="headerlink" title="TCP头部"></a>TCP头部</h3><p>20-60字节。不带选项20字节</p>
+<p>源端口，目的端口，序列号，确认号，头部长度，保留，CWR，ECE，URG，ACK，PSH，RST，SYN，FIN，窗口大小，校验和，紧急指针以及选项</p>
+<p>TCP链接组成—四元组</p>
+<p>序列号-标识发送端到接收端数据流。确认号值为期待的下一个序列号。</p>
+<p>建立新连接，发送SYN报文，序列号为本次连接使用的第一个序列号。后续序列号和对端返回ACK号在该方向递增。</p>
+<p>ISN随机。</p>
+<p>CWR-拥塞窗口减</p>
+<p>ECH-ECN回显（发送方接收到了一个更早的窗口通告）</p>
+<p>URG-紧急（紧急指针字段有效）</p>
+<p>ACK-确认</p>
+<p>PSH-推送</p>
+<p>RST-重置链接</p>
+<p>SYN-初始化一个链接的同步序号</p>
+<p>FIN-该报文段发送方已停止向对方发送数据。</p>
+<p>窗口大小-通告窗口大小，字节数，从ACK号指定，接收方想要接收的字节开始。16位最大65535，可通过窗口缩放选项进行缩放。</p>
+<p>校验和</p>
+<p>紧急指针-URG位设置有效</p>
+<p>选项字段-最常见的为MSS（最大段大小）。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tcp/" rel="tag"># tcp</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/11/Smart-Pointer/" rel="prev" title="Smart Pointer">
+                  <i class="fa fa-chevron-left"></i> Smart Pointer
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chauncy</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+</body>
+</html>
