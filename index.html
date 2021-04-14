@@ -171,7 +171,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -184,7 +184,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -224,6 +224,215 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/04/14/Trie/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Chauncy">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chauncy's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/14/Trie/" class="post-title-link" itemprop="url">Trie</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-04-14 10:17:28 / Modified: 10:55:30" itemprop="dateCreated datePublished" datetime="2021-04-14T10:17:28+08:00">2021-04-14</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>方法来自于<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/implement-trie-prefix-tree/solution/shi-xian-trie-qian-zhui-shu-by-leetcode-ti500/">Leetcode题解</a>, 在此进行记录</p>
+<blockquote>
+<p>Trie前缀树或字典树，是一棵有根树，节点字段如下：</p>
+<ul>
+<li>指向子节点的指针数组children 。</li>
+<li>bool字段<em>isEnd</em>表示该节点是否为字符串的结尾</li>
+</ul>
+<p>向树中插入字符串</p>
+<p>从字典树的树根开始，插入字符串。对于当前字符对应的子节点，有两种情况：</p>
+<ul>
+<li>子节点存在。沿着指针移动到子节点，继续处理下一字符。</li>
+<li>子节点不存在。创建一个新的子节点，记录在children数组的对应位置上，然后沿着指针移动到子节点，继续搜索下一字符。</li>
+</ul>
+<p>重复以上步骤，直到处理字符串的最后一个字符，然后当前节点标记为字符串的结尾。</p>
+<p>查找前缀</p>
+<p>从字典树跟开始查找前缀。对于当前字符对应的子节点，有两种情况:</p>
+<ul>
+<li>子节点存在。沿着指针移动到子节点，继续搜索下一个字符。</li>
+<li>子节点不存在。说明字典树中不包含该前缀，返回空指针。</li>
+</ul>
+<p>重复以上步骤，知道返回空指针或搜索完前缀的最后一个字符。</p>
+<p>若搜索到了前缀的末尾，就说明字典树中存在该前缀。此外，若前缀末尾对应节点的<em>isEnd</em>为真，则说明字典树中存在该字符串。</p>
+</blockquote>
+<p>上面是Leetcode中给出的字典树陈述。下面我来做个总结，字典树是一棵有根树，即每次的查找和插入等操作均从数根开始进行，其节点有两个字段一个指针数组字段，该字段包含所有可能出现字符的集合，第二个字段为<em>isEnd</em>,表示是否有字符串的结尾落于此处。然后是节点的组织形式，从上面节点的成员看，如果字典树的子节点存在，表示按照当前顺序存在对应字符，前缀匹配成功，之后移动到子节点继续进行查找，重复这一过程直到字符串查找完毕，此时子节点的<em>isEnd</em>如果为True，则表示该字符串存在于字典树中。下面来看代码实现：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Trie</span>&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;Trie*&gt; children;	<span class="comment">//指向子节点的数组指针</span></span><br><span class="line">    <span class="keyword">bool</span> isEnd;	<span class="comment">// 标识字符串是否存在的isEnd</span></span><br><span class="line"></span><br><span class="line">    <span class="function">Trie* <span class="title">searchPrefix</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> prefix)</span></span>&#123;</span><br><span class="line">        Trie* node = <span class="keyword">this</span>;			<span class="comment">//在查找过程中，从根开始查找，也就是当前的Trie开始</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">char</span> ch : prefix)&#123;</span><br><span class="line">            ch -= <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span>(node-&gt;children[ch] == <span class="literal">nullptr</span>)&#123;	<span class="comment">// 子节点不存在的情况</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node-&gt;children[ch];		<span class="comment">// 子节点存在就转移向子节点继续查找</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> node;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Trie(): children(<span class="number">26</span>), isEnd(<span class="literal">false</span>)&#123;&#125;	<span class="comment">// Trie的构造函数，将children设置成为字符集中的字符个数</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> word)</span></span>&#123;		</span><br><span class="line">        Trie* node = <span class="keyword">this</span>;			<span class="comment">// 插入操作从根开始</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">char</span> ch : word)&#123;</span><br><span class="line">            ch -= <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span>(node-&gt;children[ch] == <span class="literal">nullptr</span>)&#123;		<span class="comment">// 如果子节点不存在，就新建一个子节点</span></span><br><span class="line">                node-&gt;children[ch] = <span class="keyword">new</span> Trie();</span><br><span class="line">            &#125;</span><br><span class="line">            node = node-&gt;children[ch];		<span class="comment">//转移向子节点</span></span><br><span class="line">        &#125;</span><br><span class="line">        node-&gt;isEnd = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">search</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> word)</span></span>&#123;</span><br><span class="line">        Trie* node = <span class="keyword">this</span>-&gt;searchPrefix(word);		<span class="comment">//search 只是调用前缀查找，然后检查node-&gt;isEnd</span></span><br><span class="line">        <span class="keyword">return</span> node != <span class="literal">nullptr</span> &amp;&amp; node-&gt;isEnd;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">startWith</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> prefix)</span></span>&#123;			<span class="comment">//前缀查找不需要检查node-&gt;isEnd</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>-&gt;searchPrefix(prefix) != <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/03/21/TCP%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Chauncy">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chauncy's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/21/TCP%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86/" class="post-title-link" itemprop="url">TCP连接管理</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-03-21 18:18:33 / Modified: 18:58:05" itemprop="dateCreated datePublished" datetime="2021-03-21T18:18:33+08:00">2021-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h4 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h4><p>TCP- 面向连接单播协议。</p>
+<p>需建立连接，需提供可靠服务（处理丢包、重复以及错误等）。</p>
+<p>连接建立过程—交换选项（连接的参数）</p>
+<h4 id="TCP连接的建立和终止"><a href="#TCP连接的建立和终止" class="headerlink" title="TCP连接的建立和终止"></a>TCP连接的建立和终止</h4><p>四元组—TCP连接的构成</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">源地址IP</th>
+<th style="text-align:center">目的地址IP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">源端口号</td>
+<td style="text-align:center">目的端口号</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>三个阶段-启动、数据传输和关闭</p>
+<p>三次握手：</p>
+<ol>
+<li>client发送SYN报文段，指明端口和初始序列号ISN(c)，通常还会带选项。</li>
+<li>服务器发送自己的SYN作为响应，并包含本身初始化序列号ISN(s)。将ISN(c)+1作为ACK返回。</li>
+<li>确认服务器SYN，客户端将ISN(s)+1作为ACK返回。</li>
+</ol>
+<p>四次挥手：</p>
+<ol>
+<li>主动关闭这发送FIN，包含一个序列号K和最后一个接收报文L-1的ACK值为L。</li>
+<li>被动关闭者将K+1作为ACK返回，报文序号为L。</li>
+<li>被动关闭者发送自身FIN+ACK， 报文序号为L，ACK为K+1（和上面一样）。</li>
+<li>主动关闭者发送ACK序号为K，ACK为L+1</li>
+</ol>
+<p>TCP半关闭-仅关闭数据流的一个传输方向，而两个半关闭操作合在一起就能关闭整个连接</p>
+<h5 id="半关闭"><a href="#半关闭" class="headerlink" title="半关闭"></a>半关闭</h5><p>TCP主动关闭端指出己端数据发送完毕，但仍希望接收对端数据。</p>
+<p>过程如下：</p>
+<ol>
+<li>最先的两个报文段与先前一直。</li>
+<li>在被动关闭端发送完FIN的确认后，仍可发送数据。</li>
+<li>数据发送结束，被动关闭端发送FIN来完成关闭。</li>
+</ol>
+<h5 id="同时打开与关闭"><a href="#同时打开与关闭" class="headerlink" title="同时打开与关闭"></a>同时打开与关闭</h5><p>两端SYN几乎同时发送到达对端，双方均拥有IP地址和端口号，在初始的SYN到达两端后，两端分别就这两个SYN进行确认，之后连接建立。此种情况下确认序列号使用SYN序列号，也就是序列号仍保持原状，将对端序列号加一作为ACK返回。</p>
+<p>两端同时发送FIN，在收到FIN后两端又同时确认，序号不变，将对端序列号加一作为ACK返回。</p>
+<h5 id="初始化序列号"><a href="#初始化序列号" class="headerlink" title="初始化序列号"></a>初始化序列号</h5><p>发送SYN前随机选择选择序列号，避免序列号重叠问题（可能的实现32位计数器，4us加一改变ISN）。</p>
+<p>同一连接的不同实例，关闭后又建立的不同实例，采用相同四元组导致可能的后续数据延迟发送到之前的连接。因此为了避免这种情况，初始化序列号的选择极为重要。</p>
+<p>随机选择也是为了抵御攻击，因为只要一个TCP报文段具备连接的四元组和活动窗口的序列号即会被认为是正确的，因此为了不让攻击者猜出序列号，须随机。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
