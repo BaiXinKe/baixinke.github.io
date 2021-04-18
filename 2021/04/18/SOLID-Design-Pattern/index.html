@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chauncy.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="SOLID为以下五个原则的首字母缩写：  单一职责原则 Single Responsibility Principle (SRP) 开闭原则 Open-Closed Principle (OCP) 里斯科夫替代原则 Liskov Substitution Principle (LSP) 接口隔离原则 Interface Segregation Principle (ISP) 依赖倒置原则 Depe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SOLID Design Principles">
+<meta property="og:url" content="http://chauncy.github.io/2021/04/18/SOLID-Design-Pattern/index.html">
+<meta property="og:site_name" content="Chauncy&#39;s blog">
+<meta property="og:description" content="SOLID为以下五个原则的首字母缩写：  单一职责原则 Single Responsibility Principle (SRP) 开闭原则 Open-Closed Principle (OCP) 里斯科夫替代原则 Liskov Substitution Principle (LSP) 接口隔离原则 Interface Segregation Principle (ISP) 依赖倒置原则 Depe">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-18T02:47:04.000Z">
+<meta property="article:modified_time" content="2021-04-18T05:31:38.770Z">
+<meta property="article:author" content="Chauncy">
+<meta property="article:tag" content="Principles">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://chauncy.github.io/2021/04/18/SOLID-Design-Pattern/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>SOLID Design Principles | Chauncy's blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Chauncy's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%B8%80%E8%81%8C%E8%B4%A3%E5%8E%9F%E5%88%99"><span class="nav-number">1.</span> <span class="nav-text">单一职责原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E9%97%AD%E5%8E%9F%E5%88%99"><span class="nav-number">2.</span> <span class="nav-text">开闭原则</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Chauncy"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Chauncy</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/baixinke" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;baixinke" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:baixinke@qq.com" title="E-Mail → mailto:baixinke@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+        <div class="code-wars-label">
+          <img src="https://www.codewars.com/users/BaiXinKe/badges/micro"/>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/04/18/SOLID-Design-Pattern/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Chauncy">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chauncy's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SOLID Design Principles
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-04-18 10:47:04 / Modified: 13:31:38" itemprop="dateCreated datePublished" datetime="2021-04-18T10:47:04+08:00">2021-04-18</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>SOLID为以下五个原则的首字母缩写：</p>
+<ol>
+<li>单一职责原则 Single Responsibility Principle (SRP)</li>
+<li>开闭原则 Open-Closed Principle (OCP)</li>
+<li>里斯科夫替代原则 Liskov Substitution Principle (LSP)</li>
+<li>接口隔离原则 Interface Segregation Principle (ISP)</li>
+<li>依赖倒置原则 Dependency Inversion Principle (DIP)</li>
+</ol>
+<h2 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h2><p>有以下类，包括标题和一些内容</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Journal</span>&#123;</span></span><br><span class="line">  <span class="built_in">string</span> title;</span><br><span class="line">  <span class="built_in">vector</span>&lt;<span class="built_in">string</span>&gt; entries;</span><br><span class="line">    </span><br><span class="line">  <span class="function"><span class="keyword">explicit</span> <span class="title">Joutnal</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp; title)</span> : title</span>&#123;title&#125;&#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>现在需要一个add函数来进行内容添加，每次添加的内容前面会有一个序号, 实现如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Journal::add</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp; entry)</span></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> count = <span class="number">1</span>;</span><br><span class="line">    entries.push_back(boost::lexical_cast&lt;<span class="built_in">string</span>&gt;(count++) + <span class="string">&quot;: &quot;</span> + entry);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Journal j&#123;<span class="string">&quot;Dear Diary&quot;</span>&#125;;</span><br><span class="line">j.add(<span class="string">&quot;I cried today&quot;</span>);</span><br><span class="line">j.add(<span class="string">&quot;I ate a bug&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>这是没为题的，因为为日记类添加内容就是Journal类自身的职责所在。</p>
+<p>之后加入你需要一个存储函数，将日记存储到一个文件中：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Journal::save</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp; filename)</span></span>&#123;</span><br><span class="line">    <span class="function">ofstream <span class="title">ofs</span><span class="params">(filename)</span></span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; s : entries)</span><br><span class="line">        ofs &lt;&lt; s &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述解决方法存在问题，日记类的职责就是保存日记实体，将其写入磁盘这一功能并非其职责所在。如果将该职责分给Journal或者一些小的classes. 任何持久化的改变（如不去将内容写在磁盘上而是写在云上）都会导致大量的对所影响类的更改。</p>
+<p>因此将内容持久化应是一个单独的议题，因此最好将其写入一个单独的类中：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PersistanceManager</span>&#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">(<span class="keyword">const</span> Journal&amp; j, <span class="keyword">const</span> <span class="built_in">string</span>&amp; filename)</span></span>&#123;</span><br><span class="line">      <span class="function">ofstream <span class="title">ofs</span><span class="params">(filename)</span></span>;</span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; s : j.entries)</span><br><span class="line">          ofs &lt;&lt; s &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">  &#125;  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上述解决方案即为单一职责原则即：每个类只有一个职责，只会在单一原因下进行修改。Journal只有有关于存储条目的问题上有其他方面的问题时需要进行修改。如：可能希望每个entry前缀有一个时间戳，然后你可以通过修改add（）函数来做到这一点。另一方面，如果你想要改变持久化机制，你就需要去修改PersistenceManager类。</p>
+<h2 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h2><p>假设我们的数据库中有一系列产品，每个产品都有尺寸和颜色。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="keyword">class</span> <span class="title">Color</span>&#123;</span> Red, Green, Blue &#125;;</span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="keyword">class</span> <span class="title">Size</span>&#123;</span> Small, Medium, Large &#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Product</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="built_in">string</span> name;</span><br><span class="line">    Color color;</span><br><span class="line">    Size size;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>接下来为某些产品提供一个过滤功能，定义了如下过滤器：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ProductFilter</span>&#123;</span></span><br><span class="line">  <span class="keyword">typedef</span> <span class="built_in">vector</span>&lt;Product*&gt; Items;  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>接着，假设过滤器将按照颜色对产品进行过滤，我们就有如下定义：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ProductFilter::Items <span class="title">ProductFilter::by_color</span><span class="params">(Items items, Color color)</span></span>&#123;</span><br><span class="line">    Items result;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; i : items)&#123;</span><br><span class="line">        <span class="keyword">if</span>(i-&gt;color == color)&#123;</span><br><span class="line">            result.push_back(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当前过滤器类表现得很好，但是当需求发生变化，需要再写一个根据尺寸进行过滤的函数呢？我们可能会将by_color函数进行复制，然后进行改写，这样会显得十分重复。</p>
+<p>但是为什么不写一个带有谓词的通用方法呢？一个原因是不同形式的过滤器可能会有着不同的方法，如一些记录类型可能被索引以及需要使用特殊方式进行搜索，一些数据类型更适合在GPU上进行搜索，而其他则不是。</p>
+<p>接下来，需求再次发生改变，现在需要同时对颜色和尺寸进行过滤，是否要添加一个如下的函数呢？</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ProductFilter::Items <span class="title">ProductFilter::by_color_and_size</span><span class="params">(Items items, Size size, Color color)</span></span>&#123;</span><br><span class="line">    Items result;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; i : items)&#123;</span><br><span class="line">        <span class="keyword">if</span>(i-&gt;size == size &amp;&amp; i-&gt;color == color)</span><br><span class="line">            result.push_back(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从前面的内容看，我们需要开闭原则，即类型对扩展是开放的对修改时封闭的。换句话说，我们希望过滤器是在不修改的情况下是可扩展的(可能在不同的编译单元中)，并且可重新编译已经交给用户的代码。</p>
+<p>首先我们根据概念来对任务进行分割（单一职责原则），我们的过滤器分为两部分，过滤（处理所有项目仅返回其中一些），以及一个声明(谓词被定义为施加于每个数据元素的操作)。</p>
+<p>首先我们创建一个极为简单的接口声明：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Specification</span>&#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">is_satisfied</span><span class="params">(T* item)</span> </span>= <span class="number">0</span>;  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>类型T是我们选择的类型，其可以是一个具体的Product，也可以是任何类型。保证了其的可复用性。</p>
+<p>接下来，我们需要一个基于Specification&lt;T&gt;进行过滤: 可通过定义一个Filter&lt;T&gt;来进行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Filter</span>&#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="built_in">vector</span>&lt;T*&gt; <span class="title">filter</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  	<span class="built_in">vector</span>&lt;T*&gt; items,</span></span></span><br><span class="line"><span class="function"><span class="params">    Specification&lt;T&gt;&amp; spec</span></span></span><br><span class="line"><span class="function"><span class="params">  )</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上面做的只是声明了调用过滤函数的签名，其接受items和一个Specification， 以及返回通过认证的items集合，上述假设item存储在vector中，在真实情况下可以传递给filter一对迭代器或客制化的接口声明来传递一个容器。</p>
+<p>基于上述处理，提供的过滤器的实现十分简单。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">BetterFilter</span>:</span> Filter&lt;Product&gt;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="function"><span class="built_in">vector</span>&lt;Product*&gt; <span class="title">filter</span><span class="params">(<span class="built_in">vector</span>&lt;Product*&gt; items,	</span></span></span><br><span class="line"><span class="function"><span class="params">                          Specification&lt;Product&gt;&amp; spec)</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      <span class="built_in">vector</span>&lt;Product*&gt; result;</span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; p : items)&#123;</span><br><span class="line">          <span class="keyword">if</span>(spec.is_satisfied(p))</span><br><span class="line">              result.push_back(p);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ColorSpecification</span>:</span> Specification&lt;Product&gt;</span><br><span class="line">&#123;</span><br><span class="line">  Color color;</span><br><span class="line">    </span><br><span class="line">  <span class="function"><span class="keyword">explicit</span> <span class="title">ColorSpecification</span><span class="params">(<span class="keyword">const</span> Color color)</span>:</span></span><br><span class="line"><span class="function">    color</span>&#123;color&#125; &#123;&#125;</span><br><span class="line">   </span><br><span class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">is_satified</span><span class="params">(Product* item)</span> <span class="keyword">override</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> item-&gt;color == color;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 现在可以这样进行过滤</span></span><br><span class="line">Product apple&#123;<span class="string">&quot;Apple&quot;</span>, Color::Green, Size::Small&#125;;</span><br><span class="line">Product tree&#123;<span class="string">&quot;Tree&quot;</span>, Color::Green, Size::Large&#125;;</span><br><span class="line">Product house&#123;<span class="string">&quot;House&quot;</span>, Color::Blue, Size::Large&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;Product*&gt; all&#123;&amp;apple, &amp;tree, &amp;house&#125;;</span><br><span class="line"></span><br><span class="line">BetterFilter bf;</span><br><span class="line"></span><br><span class="line"><span class="function">ColorSpecification <span class="title">gree</span><span class="params">(Color::Green)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> green_things = bf.filter(all, gree);</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">auto</span>&amp; x : green_things)</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; x-&gt;name &lt;&lt; <span class="string">&quot; is green&quot;</span> &lt;&lt; <span class="built_in">endl</span>;</span><br></pre></td></tr></table></figure>
+<p>现在我们可以使用复合声明来对过滤进行组合：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">AndSpecification</span>:</span> Specification&lt;T&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Specification&lt;T&gt;&amp; first;</span><br><span class="line">    Specification&lt;T&gt;&amp; second;</span><br><span class="line">    </span><br><span class="line">    AndSpecification(Specification&lt;T&gt;&amp; first, Specification&lt;T&gt;&amp; second)</span><br><span class="line">        	:first&#123;first&#125;, second&#123;second&#125; &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">is_satisfied</span><span class="params">(T* item)</span> <span class="keyword">override</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> first.is_satisfied(item) &amp;&amp; second.is_satisfied(item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>然后你就可以很好的对逻辑进行组合：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">SizeSpecification <span class="title">large</span><span class="params">(Size::Large)</span></span>;</span><br><span class="line"><span class="function">ColorSpecification <span class="title">green</span><span class="params">(Color::Green)</span></span>;</span><br><span class="line">AndSpecification&lt;Product&gt; green_and_large&#123;large, green&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> big_green_things = bf.filter(all, green_and_big);</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">auto</span>&amp; x : big_green_things)</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; x-&gt;name &lt;&lt; <span class="string">&quot; is large and green&quot;</span> &lt;&lt; <span class="built_in">endl</span>;</span><br></pre></td></tr></table></figure>
+<p>可以使用operator&amp;&amp;来对上述内容进行简化：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Specification</span>&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">is_satisfied</span><span class="params">(T* elem)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    AndSpecification&lt;T&gt; <span class="keyword">operator</span> &amp;&amp;(Specification&amp;&amp; other)&#123;</span><br><span class="line">        <span class="keyword">return</span> AndSpecification&lt;T&gt;(*<span class="keyword">this</span>, other);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> gree_and_big = ColorSpecification(Color::Green) </span><br><span class="line">    				&amp;&amp;</span><br><span class="line">    		       SizeSpecification(Size::Large);</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Principles/" rel="tag"># Principles</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/15/Leetcode%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8Drecord/" rel="prev" title="Leetcode打家劫舍record">
+                  <i class="fa fa-chevron-left"></i> Leetcode打家劫舍record
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chauncy</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+</body>
+</html>
