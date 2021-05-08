@@ -171,7 +171,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -184,7 +184,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -224,6 +224,93 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/05/08/%E4%B8%80%E4%B8%AA%E5%86%85%E5%AD%98%E6%B1%A0%E7%9A%84%E5%AE%9E%E7%8E%B0(%E4%B8%80)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Chauncy">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chauncy's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/05/08/%E4%B8%80%E4%B8%AA%E5%86%85%E5%AD%98%E6%B1%A0%E7%9A%84%E5%AE%9E%E7%8E%B0(%E4%B8%80)/" class="post-title-link" itemprop="url">一个内存池的实现(一)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-05-08 16:47:00 / Modified: 17:14:18" itemprop="dateCreated datePublished" datetime="2021-05-08T16:47:00+08:00">2021-05-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cpp/" itemprop="url" rel="index"><span itemprop="name">Cpp</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>来看一个项目中的内存池的实现，实现方法取自项目<a target="_blank" rel="noopener" href="https://github.com/caozhiyi/CppNet">caozhiyi/CppNet</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//filename BlockMemoryPool.h</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mutex&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBlockMemoryPool</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CBlockMemoryPool(<span class="keyword">const</span> <span class="keyword">int</span> large_sz, <span class="keyword">const</span> <span class="keyword">int</span> add_num);</span><br><span class="line">    ~CBlockMemoryPool();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> *<span class="title">PoolLargeMalloc</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">PoolLargeFree</span><span class="params">(<span class="keyword">void</span>* &amp;m)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetSize</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetBlockLength</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ReleaseHalf</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Expansion</span><span class="params">(<span class="keyword">int</span> num=<span class="number">0</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">std</span>::mutex          _large_mutex;</span><br><span class="line">    <span class="keyword">int</span>                 _number_large_add_nodes;</span><br><span class="line">    <span class="keyword">int</span>                 _large_size;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">void</span>*&gt;  _free_mem_vec;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>首先看CBlockMemoryPool文件，该文件包含CBlockMemoryPool类的声明，该类为内存池的组件类，其主要接口如上述代码所示。</p>
+<p>接下来首先来看构造函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CBlockMemoryPool::CBlockMemoryPool(<span class="keyword">const</span> <span class="keyword">int</span> large_sz, <span class="keyword">const</span> <span class="keyword">int</span> add_num):</span><br><span class="line">    _number_large_add_nodes(add_num), _large_size(large_sz)&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该类的构造函数有两个参数large_size和add_num，其分别用来对成员_number_large_add_nodes和 _age_size进行初始化，两者的作用分别是每次进行扩张时扩张的内存块个数和内存块大小。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CBlockMemoryPool::Expansion</span><span class="params">(<span class="keyword">int</span> num)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(num == <span class="number">0</span>)&#123;</span><br><span class="line">        num = _number_large_add_nodes;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; num; ++i)&#123;</span><br><span class="line">        <span class="keyword">void</span> *mem = <span class="built_in">malloc</span>(_large_size);</span><br><span class="line">        _free_mem_vec.push_back(mem);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Expansion函数用来在内存不足时扩展内存，参数num用来指定扩张内存块的个数，如果num为0，即默认扩张_number_large_add_nodes个内存块。内存块由成员 _free_mem_vec进行管理。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span>* <span class="title">CBlockMemoryPool::PoolLargeMalloc</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">lock</span><span class="params">(_large_mutex)</span></span>;</span><br><span class="line">    <span class="keyword">if</span>(_free_mem_vec.empty())&#123;</span><br><span class="line">        Expansion();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> *ret = _free_mem_vec.back();</span><br><span class="line">    _free_mem_vec.pop_back();</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>PoolLargeMalloc用来分配内存，当_free_mem_vec中没有内存块存在时，其调用Expansion来扩充内存块，PoolLargeMalloc中的扩充使用默认的 _number_large_add_nodes数量进行扩充，然后将 _free_mem_vec尾部的内存块返回给调用者。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CBlockMemoryPool::PoolLargeFree</span><span class="params">(<span class="keyword">void</span>* &amp;m)</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">lock</span><span class="params">(_large_mutex)</span></span>;</span><br><span class="line">    _free_mem_vec.push_back(m);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>PoolLargeFree(void* &amp;m)执行内存的释放即将其添加到 _free_mem_vec中。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CBlockMemoryPool::~CBlockMemoryPool()&#123;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">lock</span><span class="params">(_large_mutex)</span></span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span> iter = _free_mem_vec.begin(); iter != _free_mem_vec.end(); ++iter)&#123;</span><br><span class="line">        <span class="built_in">free</span>(*iter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后我们看析构函数，从头至尾将 _free_mem_vec中的内存释放掉。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1208,110 +1295,6 @@
 <p>但auto在配合代理类使用的情况下表现并不如人意，因此在使用代理类的情况下可借由带显式型别初始化习惯法来将结果指向期望的型别。</p>
 <p>扩展 </p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/25148592">蓝色大佬的一篇关于auto和forloop使用的文章</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/03/06/auto%E6%8E%A8%E6%96%AD%EF%BC%8Cdecltype%E7%9B%B8%E5%85%B3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Chauncy">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chauncy's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/06/auto%E6%8E%A8%E6%96%AD%EF%BC%8Cdecltype%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">auto推断，decltype相关</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-03-06 21:54:08" itemprop="dateCreated datePublished" datetime="2021-03-06T21:54:08+08:00">2021-03-06</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-03-10 21:45:07" itemprop="dateModified" datetime="2021-03-10T21:45:07+08:00">2021-03-10</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Cpp/" itemprop="url" rel="index"><span itemprop="name">Cpp</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="auto推导"><a href="#auto推导" class="headerlink" title="auto推导"></a>auto推导</h2><p>承接上文即型别推导一文中的推导规则在大部分情况下也适用于auto推断如下所示：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> x = <span class="number">27</span>; <span class="comment">// auto-&gt;int</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">auto</span> cx = x; <span class="comment">// auto-&gt;int</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">auto</span>&amp; rx = x; <span class="comment">// auto-&gt;int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span>&amp;&amp; uref1 = x; <span class="comment">// auto-&gt;int&amp;</span></span><br><span class="line"><span class="keyword">auto</span>&amp;&amp; uref2 = cx; <span class="comment">// auto-&gt;const int&amp;</span></span><br><span class="line"><span class="keyword">auto</span>&amp;&amp; uref3 = <span class="number">27</span>; <span class="comment">// auto-&gt;int&amp;&amp;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> name[] = <span class="string">&quot;R. N. Briggs&quot;</span>;</span><br><span class="line"><span class="keyword">auto</span> attr = name; <span class="comment">// auto-&gt;const char*</span></span><br><span class="line"><span class="keyword">auto</span>&amp; attr2 = name; <span class="comment">// auto-&gt;const char(&amp;)[13]</span></span><br></pre></td></tr></table></figure>
-<p>但有一种情况下auto推断和模板推断的结果产生了分歧即使用大括号{}进行初始化时：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> x&#123;<span class="number">27</span>&#125;; <span class="comment">// auto-&gt;std::initalizer_list&lt;int&gt;</span></span><br><span class="line"><span class="keyword">auto</span> x2 = &#123;<span class="number">27</span>&#125;; <span class="comment">// 同上</span></span><br></pre></td></tr></table></figure>
-<p>此时auto会被推断为std::initalizer_list<T>类型。</p>
-<p>看如下的一个编译失败的例子</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> x = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3.0</span>&#125;; <span class="comment">// auto-&gt;std::initalizer_list&lt;T&gt; -&gt;括号内内容不统一，型别推导失败</span></span><br></pre></td></tr></table></figure>
-<p>在C++14中auto会被用在返回值推导和lambda表达式形参推导上，此时规则遵循模板型别推导：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">createInitList</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;		<span class="comment">// 编译错误，无法完成推导</span></span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> resetV = [&amp;v](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; newValue)&#123;v = newValue;&#125;; <span class="comment">// cpp14</span></span><br><span class="line"></span><br><span class="line">    resetV(&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;); <span class="comment">// 编译错误，无法完成推导</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="decltype相关"><a href="#decltype相关" class="headerlink" title="decltype相关"></a>decltype相关</h2><p>decltype会如实返回对象的类型，包括const性，volatile性，引用等。</p>
-<p>一般情况下，容器中的operator[]会返回一个T&amp;，现在考虑如下函数：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> Index&gt;</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">authAndAccess</span><span class="params">(Container&amp; c, Index i)</span></span>&#123;</span><br><span class="line">    authenticateUser();</span><br><span class="line">    <span class="keyword">return</span> c[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上述函数使用c++14中auto来推断返回值类型，但可能出现如下语法时，代码将无法通过编译</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">deque</span>&lt;<span class="keyword">int</span>&gt; d;</span><br><span class="line"></span><br><span class="line">authAndAccess(d, <span class="number">5</span>) = <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
-<p>此处的问题时，当我们使用auto进行返回值型别推导时，其与模板型别推导遵循相同的规则，此处的c[i]返回值类型为T&amp;，根据模板型别推导，其引用性会被剔除，auto推断得到int是一个右值，因此上述语句将无法通过编译。</p>
-<p>改进：此时如果要使代码通过编译，则应加上decltype</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> Index&gt;</span><br><span class="line"><span class="function"><span class="keyword">decltype</span>(<span class="keyword">auto</span>) <span class="title">authAndAccess</span><span class="params">(Container&amp; c, Index i)</span></span>&#123;</span><br><span class="line">    authenticateUser();</span><br><span class="line">    <span class="keyword">return</span> c[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中auto表示型别推导而decltype表示使用decltype的规则进行推导，即可得到最终的推导结果T&amp;；</p>
-<p>最后我们来考虑将右值传入函数的情况，上述函数无法接收一个右值，因为我们返回引用的情况下用户会对返回值进行更改。但有时，我们要给上述函数传递一个右值之后获取对应元素的副本，这就使得需要修改函数来使其支持右值参数：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> Index&gt;</span><br><span class="line"><span class="function"><span class="keyword">decltype</span>(<span class="keyword">auto</span>) <span class="title">authAndAccess</span><span class="params">(Container&amp;&amp; c, Index i)</span></span>&#123;	<span class="comment">// c++14 version</span></span><br><span class="line">    authenticateUser();</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">std</span>::forward&lt;Container&gt;(c)[i];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> Index&gt;</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">authAndAccess</span><span class="params">(Conatiner&amp;&amp; c, Index i)</span> 		<span class="comment">// c++ 11 version</span></span></span><br><span class="line">	-&gt; decltype(std::forward&lt;Container&gt;(c)[i])</span><br><span class="line">&#123;</span><br><span class="line">    authenticateUser();</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">std</span>::forward&lt;Container&gt;(c)[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们将Container模板参数改为接受一个万能引用，此时其可同时绑定到左值和右值上，并且对于万能引用要用到std::forwrad<T>();进行转发。</p>
-<p>decltype含有一个特殊的语法规则，即当其参数是一个比仅有名字更为复杂的左值表达式的情况下，其推导会产生左值引用T&amp;。</p>
-<p>有如下例子：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">decltype</span>(<span class="keyword">auto</span>) <span class="title">f1</span><span class="params">()</span></span>&#123;	<span class="comment">// decltype(auto) -&gt; int</span></span><br><span class="line">    <span class="keyword">int</span> x = <span class="number">0</span>;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">decltype</span>(<span class="keyword">auto</span>) <span class="title">f1</span><span class="params">()</span></span>&#123;	<span class="comment">// decltype(auto) -&gt; int&amp;</span></span><br><span class="line">    <span class="keyword">int</span> x = <span class="number">0</span>;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> (x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>给x加上括号导致其返回了局部对象的引用会导致未定义行为。</p>
 
       
     </div>
