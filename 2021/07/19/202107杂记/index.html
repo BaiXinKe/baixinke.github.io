@@ -23,21 +23,21 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"chauncy.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
-<meta name="description" content="Leetcode第91题解码方法官方题解总结 对给定的字符串s, 长度为n, 其中的字符从左到右依次为s[1], s[2], …, s[n]。使用动态规划的方法计算出字符串s的解码方法数。 设fi表示字符串s的前i个字符s[1..i]的解码方法数。在状态转移时，考虑最后一次解码使用了s中的哪些字符，会有如下情况：  第一种情况时我们使用了一个字符，即s[i]进行解码，那么只要s[i]!&#x3D;0,其就可">
+<meta name="description" content="2021年七月，夏，天气阴霾火车从长沙开到了西安，我也随火车回到了西安这个生活了五年的地方。七月，全国的天气好像都似着了火一样，但也有不同，长沙的热能让人汗如雨下，豆大的汗水顺着脸颊可以很轻易地滑落到公交车的地板上；而西安的热没有那么多水的成分，走在街上身上的汗也没有出很多。这次回来感觉西安这座城空荡荡的，也许是因为她走了，这是我第一次在西安逗留而没有见到她。约了同学吃饭，只是因为想要再回家之前可">
 <meta property="og:type" content="article">
-<meta property="og:title" content="解码方法">
-<meta property="og:url" content="http://chauncy.github.io/2021/04/21/%E8%A7%A3%E7%A0%81%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:title" content="202701杂记">
+<meta property="og:url" content="http://chauncy.github.io/2021/07/19/202107%E6%9D%82%E8%AE%B0/index.html">
 <meta property="og:site_name" content="Chauncy&#39;s blog">
-<meta property="og:description" content="Leetcode第91题解码方法官方题解总结 对给定的字符串s, 长度为n, 其中的字符从左到右依次为s[1], s[2], …, s[n]。使用动态规划的方法计算出字符串s的解码方法数。 设fi表示字符串s的前i个字符s[1..i]的解码方法数。在状态转移时，考虑最后一次解码使用了s中的哪些字符，会有如下情况：  第一种情况时我们使用了一个字符，即s[i]进行解码，那么只要s[i]!&#x3D;0,其就可">
+<meta property="og:description" content="2021年七月，夏，天气阴霾火车从长沙开到了西安，我也随火车回到了西安这个生活了五年的地方。七月，全国的天气好像都似着了火一样，但也有不同，长沙的热能让人汗如雨下，豆大的汗水顺着脸颊可以很轻易地滑落到公交车的地板上；而西安的热没有那么多水的成分，走在街上身上的汗也没有出很多。这次回来感觉西安这座城空荡荡的，也许是因为她走了，这是我第一次在西安逗留而没有见到她。约了同学吃饭，只是因为想要再回家之前可">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-04-21T05:33:14.000Z">
-<meta property="article:modified_time" content="2021-04-21T05:54:07.870Z">
+<meta property="article:published_time" content="2021-07-18T16:02:08.000Z">
+<meta property="article:modified_time" content="2021-07-18T16:49:40.470Z">
 <meta property="article:author" content="Chauncy">
-<meta property="article:tag" content="problem">
+<meta property="article:tag" content="毕竟我也不知道该如何去说">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://chauncy.github.io/2021/04/21/%E8%A7%A3%E7%A0%81%E6%96%B9%E6%B3%95/">
+<link rel="canonical" href="http://chauncy.github.io/2021/07/19/202107%E6%9D%82%E8%AE%B0/">
 
 
 <script class="page-configurations">
@@ -49,7 +49,7 @@
     lang   : 'en'
   };
 </script>
-<title>解码方法 | Chauncy's blog</title>
+<title>202701杂记 | Chauncy's blog</title>
   
 
 
@@ -148,7 +148,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -161,6 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2021%E5%B9%B4%E4%B8%83%E6%9C%88%EF%BC%8C%E5%A4%8F%EF%BC%8C%E5%A4%A9%E6%B0%94%E9%98%B4%E9%9C%BE"><span class="nav-number">1.</span> <span class="nav-text">2021年七月，夏，天气阴霾</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%AB%E8%BD%A6%E4%BB%8E%E9%95%BF%E6%B2%99%E5%BC%80%E5%88%B0%E4%BA%86%E8%A5%BF%E5%AE%89%EF%BC%8C%E6%88%91%E4%B9%9F%E9%9A%8F%E7%81%AB%E8%BD%A6%E5%9B%9E%E5%88%B0%E4%BA%86%E8%A5%BF%E5%AE%89%E8%BF%99%E4%B8%AA%E7%94%9F%E6%B4%BB%E4%BA%86%E4%BA%94%E5%B9%B4%E7%9A%84%E5%9C%B0%E6%96%B9%E3%80%82"><span class="nav-number">1.1.</span> <span class="nav-text">火车从长沙开到了西安，我也随火车回到了西安这个生活了五年的地方。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%90%E7%BA%A6%E9%9B%B7%E9%B8%A3%E3%80%81%E9%98%B4%E9%9C%BE%E5%A4%A9%E7%A9%BA"><span class="nav-number">1.2.</span> <span class="nav-text">隐约雷鸣、阴霾天空</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%86%E7%9B%BC%E9%A3%8E%E9%9B%A8%E6%9D%A5"><span class="nav-number">1.3.</span> <span class="nav-text">但盼风雨来</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%BD%E7%95%99%E4%BD%A0%E4%BA%8E%E6%AD%A4%E5%9C%B0"><span class="nav-number">1.4.</span> <span class="nav-text">能留你于此地</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -239,7 +240,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/04/21/%E8%A7%A3%E7%A0%81%E6%96%B9%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/07/19/202107%E6%9D%82%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -252,7 +253,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          解码方法
+          202701杂记
         </h1>
 
         <div class="post-meta-container">
@@ -264,7 +265,16 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2021-04-21 13:33:14 / Modified: 13:54:07" itemprop="dateCreated datePublished" datetime="2021-04-21T13:33:14+08:00">2021-04-21</time>
+      <time title="Created: 2021-07-19 00:02:08 / Modified: 00:49:40" itemprop="dateCreated datePublished" datetime="2021-07-19T00:02:08+08:00">2021-07-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%B0%E5%BD%95/" itemprop="url" rel="index"><span itemprop="name">记录</span></a>
+        </span>
     </span>
 
   
@@ -277,16 +287,10 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>Leetcode第91题<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/decode-ways/solution/">解码方法官方题解</a>总结</p>
-<p>对给定的字符串<em>s</em>, 长度为<em>n</em>, 其中的字符从左到右依次为<em>s</em>[1], <em>s</em>[2], …, <em>s</em>[<em>n</em>]。使用动态规划的方法计算出字符串<em>s</em>的解码方法数。</p>
-<p>设<em>fi</em>表示字符串<em>s</em>的前<em>i</em>个字符s[1..<em>i</em>]的解码方法数。在状态转移时，考虑最后一次解码使用了s中的哪些字符，会有如下情况：</p>
-<ul>
-<li>第一种情况时我们使用了一个字符，即s[i]进行解码，那么只要s[i]!=0,其就可以被解码成A~Izhong的某个字母。 由于剩余的前i-1个字符的解码方法数为$f<em>{i-1}$，因此我们有状态转移方程:$f_i = f</em>{i-1}$其中s[i] != 0</li>
-<li>第二种情况是我们使用了两个字符，即s[i-1]和s[i]进行编码。其与第一种情况类似，s[i-1]不能等于0，并且s[i-1]和s[i]组成的整数必须小于等于26，这样他们就能被解码为J~Z中的某个字母。由于剩余的前i-2个字符的解码方法数为$f<em>{i-2}$状态转移方程为：$f_i = f</em>{i-2}$其中s[i-1]!=0 且10 * s[i-1] + s[i] &lt;= 26;</li>
-</ul>
-<p>将上述两种情况进行累加即可得到最终的$f_i$值。</p>
-<p>边界条件$f_0=1$。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">numDecoding</span><span class="params">(<span class="built_in">string</span> s)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> n = s.size();</span><br><span class="line">        <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">f</span><span class="params">(n+<span class="number">1</span>)</span></span>;</span><br><span class="line">        f[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)&#123;</span><br><span class="line">            <span class="keyword">if</span>(s[i<span class="number">-1</span>] != <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">            f[i] += f[i<span class="number">-1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(i &gt; <span class="number">1</span> &amp;&amp; s[i<span class="number">-2</span>] != <span class="string">&#x27;0&#x27;</span> &amp;&amp; ((s[i<span class="number">-2</span>] - <span class="string">&#x27;0&#x27;</span>) * <span class="number">10</span> + (s[i<span class="number">-1</span>]-<span class="string">&#x27;0&#x27;</span>) &lt;= <span class="number">26</span>))&#123;</span><br><span class="line">            f[i] += f[i<span class="number">-2</span>];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f[n];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+        <h2 id="2021年七月，夏，天气阴霾"><a href="#2021年七月，夏，天气阴霾" class="headerlink" title="2021年七月，夏，天气阴霾"></a>2021年七月，夏，天气阴霾</h2><h3 id="火车从长沙开到了西安，我也随火车回到了西安这个生活了五年的地方。"><a href="#火车从长沙开到了西安，我也随火车回到了西安这个生活了五年的地方。" class="headerlink" title="火车从长沙开到了西安，我也随火车回到了西安这个生活了五年的地方。"></a>火车从长沙开到了西安，我也随火车回到了西安这个生活了五年的地方。</h3><p>七月，全国的天气好像都似着了火一样，但也有不同，长沙的热能让人汗如雨下，豆大的汗水顺着脸颊可以很轻易地滑落到公交车的地板上；而西安的热没有那么多水的成分，走在街上身上的汗也没有出很多。<br>这次回来感觉西安这座城空荡荡的，也许是因为她走了，这是我第一次在西安逗留而没有见到她。约了同学吃饭，只是因为想要再回家之前可以吃到好久没吃的烤肉，见面之后好像我的话相较于之前多了好多，在长沙的这些日子基本上我也没有什么话可以对周围的人去讲，每天周而复始干着同样的工作、但每天又有着些许不同，但总归没有什么太大的变动。<br>这是一篇杂记，但我又想写一些总结性质的东西。回到家，意味着研一的彻底结束，在对导师阳奉阴违的做派下我度过了这一年，我很清楚我想要的未来，我也觉得我有为之努力，但总觉得还差很多很多，距明年春招只剩七个月，因此需要做一些更加具体而又实际的东西来填补我在实际项目上的经验空缺，但论文还是没有头绪，虽然使用Python去学习、复现论文中的模型基本上没有什么问题，但总结和归纳自己的结果却有些没有头绪，所以接下来的几个月方向性要更加明确一些，虽然不喜欢科研这种养蛊的东西、但是毕业条件还是得拿到不然会让自己处在一种很尴尬的位置之上。而关于工作之事也到了要决战冲刺的时候了。<br>我也不知道明年能是一个怎么样的结果，我渴望着能够进入大厂，渴望着能够去往业界一流的公司去工作，但是我的水平真的足以支撑我的野心吗？还是说我的一切都只是一个笑话。</p>
+<h3 id="隐约雷鸣、阴霾天空"><a href="#隐约雷鸣、阴霾天空" class="headerlink" title="隐约雷鸣、阴霾天空"></a>隐约雷鸣、阴霾天空</h3><p>前途好像覆盖着厚重的迷雾、我不知道到底出路该如何去走。她走了，好像从未来过，只留下了很多我们之间的曾经相处的痕迹。生活中总是带着她的影子，这一次她应该是真的走了。我也不明白为什么我还是不愿放弃，可能是不愿放弃之前的自己的付出，也可能是不愿和她美好的回忆就此画上终结符。但更加浓重的阴霾是学业和工作带来的，学业的懈怠和工作的不确定性所带来的内心踌躇总会一遍遍地折磨着我。这也许就是知乎里那些人所说的精神内耗。我总是借口找工作地学习来遮蔽掉对论文的研究以及加快自己看新东西的速度而不去练习，这使得我所学并不牢固，而且由于看的书还都是大部头，所以知识的遗忘总比学得要快，而这种情况更加加深了自己内心的焦虑。之后的策略要发生改变、要让自己的目标更加明确、要更加专注地去解决问题。</p>
+<h3 id="但盼风雨来"><a href="#但盼风雨来" class="headerlink" title="但盼风雨来"></a>但盼风雨来</h3><p>读研的日子总有两种截然相反的想法在脑中对立。希望能够给我更多的时间去磨练技术，沉淀技术。以及能够过得快一点，这穷苦的日子，导师对论文的催促以及一个人的孤独总是使得我希望能够将钟表直接拨到毕业的日子，让我的生活能够发生一些重大的变动，改变我现有的生活。我不喜欢研究生的生活、我也不喜欢每天看论文的日子（虽然我也没有每天去看，但是那种负罪感还是能够将我压的有些沉闷），总之我不希望过平静的生活，但总受迫于没钱和菜，使得我的生活只得一直沉闷下去。</p>
+<h3 id="能留你于此地"><a href="#能留你于此地" class="headerlink" title="能留你于此地"></a>能留你于此地</h3><p>我总是会去权衡，脑子里总有一些不切实际的想法，但最终我明白，我可能什么也不会得到，我的一生会是一直在惋惜的一生。吗？</p>
 
     </div>
 
@@ -296,21 +300,18 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/problem/" rel="tag"># problem</a>
+              <a href="/tags/%E6%AF%95%E7%AB%9F%E6%88%91%E4%B9%9F%E4%B8%8D%E7%9F%A5%E9%81%93%E8%AF%A5%E5%A6%82%E4%BD%95%E5%8E%BB%E8%AF%B4/" rel="tag"># 毕竟我也不知道该如何去说</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/04/18/SOLID-Design-Pattern/" rel="prev" title="SOLID Design Principles">
-                  <i class="fa fa-chevron-left"></i> SOLID Design Principles
+                <a href="/2021/06/27/Word/" rel="prev" title="Word">
+                  <i class="fa fa-chevron-left"></i> Word
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/05/08/%E4%B8%80%E4%B8%AA%E5%86%85%E5%AD%98%E6%B1%A0%E7%9A%84%E5%AE%9E%E7%8E%B0(%E4%B8%80)/" rel="next" title="一个内存池的实现(一)">
-                  一个内存池的实现(一) <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>

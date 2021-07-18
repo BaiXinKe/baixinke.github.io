@@ -171,20 +171,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -224,6 +224,373 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/03/11/Smart-Pointer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Chauncy">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chauncy's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/11/Smart-Pointer/" class="post-title-link" itemprop="url">Smart Pointer</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-03-11 18:36:38" itemprop="dateCreated datePublished" datetime="2021-03-11T18:36:38+08:00">2021-03-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-12 00:28:18" itemprop="dateModified" datetime="2021-03-12T00:28:18+08:00">2021-03-12</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cpp/" itemprop="url" rel="index"><span itemprop="name">Cpp</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>今天先来看智能指针的部分即SmartPointer，讲到智能指针就需要了解为什么普通的指针无法满足我们的需求：</p>
+<blockquote>
+<ol>
+<li>无法知晓指针指出的是单个对象还是一个数组</li>
+<li>无法知晓指针是否拥有其指涉的对象</li>
+<li>无法明确指针析构的具体方式，delete或者特定函数</li>
+<li>delete使用形式，数组还是普通delete</li>
+<li>if 语句或抛出异常的情况下，路径析构问题，会忘记某部分的析构</li>
+<li>所指的对象是否仍旧存活原始指针不得而知</li>
+</ol>
+</blockquote>
+<p>C++ 的四种智能指针</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">auto_ptr</span>; <span class="comment">// c++98遗留下来，已被弃用</span></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">unique_ptr</span>; <span class="comment">// 专属所有权语义</span></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>; <span class="comment">// 引用计数资源管理</span></span><br><span class="line"><span class="built_in">std</span>::weak_ptr; <span class="comment">// 弱引用，由std::shared_ptr创建并不增加引用计数数量</span></span><br></pre></td></tr></table></figure>
+<h2 id="使用std-unique-ptr管理具备专属所有权的资源"><a href="#使用std-unique-ptr管理具备专属所有权的资源" class="headerlink" title="使用std::unique_ptr管理具备专属所有权的资源"></a>使用std::unique_ptr管理具备专属所有权的资源</h2><p>std::unique_ptr的效率和原始指针一样高，原始指针所能满足的要求其均可满足，他实现的是专属所有权语义。一个非空的std::unique_ptr总是指向其所拥有的资源。std::unique_ptr是一个只移型别，不可复制。常见用法是在工厂模式中保存其所返回的资源。</p>
+<p>其默认的析构操作是通过delete完成的，但在过程中可以使用自定义的析构器来进行析构操作，如下所示：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> delInvent = [](Investment* pInvestment)&#123;</span><br><span class="line">    makeLogEntry(pInvestment);</span><br><span class="line">    <span class="keyword">delete</span> pInvestment;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">std::unique_ptr&lt;Investment, decltype(delInvent)&gt; pInv(nullptr, delInvent);</span><br></pre></td></tr></table></figure>
+<p>这样在析构时，std::unique_ptr使用自定义析构器来进行析构操作。自定义析构器可以是任何可调用类型。若其中Investment类型为一个基类，其必须拥有一个虚析构函数，来确保delete行为的正确性。</p>
+<p>当使用默认析构操作时，std::unique_ptr对象可认为和原始指针尺寸相同，担当使用自定义析构器的时候，会根据情况有所区别，在使用lambda表达式或普通函数指针时，其大小一般会增长一到两个字节，而使用函数对象的时候增长由对象内部存储的对象数量状态所决定。</p>
+<p>std::unique_ptr提供了创建数组的语义std::unique_ptr<T[]>但不推荐使用，应选用标注库容器。</p>
+<p>std::unique_ptr可便捷地转换为std::shared_ptr因此使用起来十分方便。</p>
+<h2 id="使用std-shared-ptr管理具有共享所有权的资源"><a href="#使用std-shared-ptr管理具有共享所有权的资源" class="headerlink" title="使用std::shared_ptr管理具有共享所有权的资源"></a>使用std::shared_ptr管理具有共享所有权的资源</h2><p>通过std::shared_ptr访问的对象采用共享所有权来管理其生存期。所有指涉该对象的std::shared_ptr会在其不需要的时候将对象析构，即最后一个指向对象的std::shared_ptr不在指涉到该对象的时候，析构动作就会发生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sp1 &#x3D; sp2; &#x2F;&#x2F; sp1所指涉的对象的引用计数递减，sp2所指涉的对象的引用计数递增</span><br></pre></td></tr></table></figure>
+<p>引用计数会带来的性能方面的影响：</p>
+<blockquote>
+<ol>
+<li>std::shared_ptr的尺寸时裸指针的两倍</li>
+<li>引用计数的内存必须动态分配</li>
+<li>引用计数的递增和递减操作必须时原子的</li>
+</ol>
+</blockquote>
+<p>创建一个指涉到某对象的std::shared_ptr不总是递增引用计数，原因是存在移动构造函数。 移动操作涉及两个操作即左侧对象接收指涉对象和右侧对象的指涉对象置空，在此过程中对象的引用计数未发生改变。</p>
+<p>std::shared_ptr同样支持自定义析构动作，但与std::unique_ptr不同的是，其无需在类型在声明处进行声明，即自定义析构动作并非std::shared_ptr型别的一部分，这提供了很大的灵活性，其用法如下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">std::unique_ptr&lt;widget, decltype(delInv)&gt; upw(new widget, delInv);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;widget&gt; <span class="title">spw</span><span class="params">(<span class="keyword">new</span> widget, delInv)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>删除器不在类型中即可将其放入相同的容器中，也可互相赋值。</p>
+<p>自定义删除型别不会影响std::shared_ptr的大小，其对象大小都相当于裸指针的两倍。其中包含两个指针，一个指向型别对象，一个指向一个称之为控制块的内存。控制块中包含引用计数，弱计数以及其他数据（自定义删除器，分配器等）。</p>
+<p>创建上述所说的控制块的时机如下：</p>
+<blockquote>
+<ul>
+<li>std::make_shared 总是创建一个控制块</li>
+<li>从具备专属所有权的指针（std::unique_ptr以及std::auto_ptr)中创建一个std::shared_ptr时，会创建一个控制块</li>
+<li>当std::shared_ptr构造函数使用裸指针作为实参进行调用时，会创建一个控制块</li>
+</ul>
+</blockquote>
+<p><strong>从同一个裸指针出发来构造多个std::shared_ptr将会引发未定义行为</strong></p>
+<p>建议是，尽可能避免降落指针传递给std::shared_ptr，常用std::make_shared, 在需要自定义析构器的情况下直接使用new运算出来的结果，而非传递一个裸指针变量。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> pw = <span class="keyword">new</span> widget; <span class="comment">// bad</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> pw2&#123;<span class="built_in">std</span>::make_shared&lt;widget&gt;()&#125;; <span class="comment">// OK</span></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;widget&gt; pw3&#123;<span class="keyword">new</span> widget, delwid&#125;; <span class="comment">// OK</span></span><br></pre></td></tr></table></figure>
+<p>考虑如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Widget&gt;&gt; processedWidgets;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Widget</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">process</span><span class="params">()</span></span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Widget::process</span><span class="params">()</span></span>&#123;</span><br><span class="line">    processedWidget.emplace_back(<span class="keyword">this</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码看似没有问题，但实则会引起上面说的将一个裸指针分别赋值给两个std::shared_ptr对象，看如下情况</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Widget&gt; wid&#123;<span class="keyword">new</span> Widget&#125;;</span><br><span class="line"></span><br><span class="line">wid.process();</span><br></pre></td></tr></table></figure>
+<p>此时wid保有一个控制块，使用传递this的方法我们在上面的数组中也建立了一个std::shared_ptr控制块（由原生指针调用产生）。因此会引发未定义行为，因此替代方法为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Widget</span>:</span> <span class="keyword">public</span> <span class="built_in">std</span>::enable_shared_from_this&lt;Widget&gt;&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">process</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Widget::process</span><span class="params">()</span></span>&#123;</span><br><span class="line">    processedWidget.empalce_back(shared_from_this());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>std::enable_shared_from_this&lt;Widget&gt; 称之为CRTP(奇异递归模板)，shared_form_this()会查找当前对象的控制块，并创建一个指涉该对象控块的新std::shared_ptr,这样的设计依赖于当前对象已有一个与其关联的控制块，如果没有则抛出异常，因此常采用以下手法：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Widget</span>:</span> <span class="keyword">public</span> <span class="built_in">std</span>::enable_shared_from_this&lt;Widget&gt;&#123;</span><br><span class="line"><span class="keyword">public</span>:	</span><br><span class="line">    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Ts&gt;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Widget&gt; <span class="title">create</span><span class="params">(Ts&amp;&amp;... params)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">process</span><span class="params">()</span></span>; <span class="comment">//同前</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="comment">// cotr</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>就是禁掉了对象的构造函数，使得对象只能通过create函数来进行创建，因此避免了在栈上创建对象。</p>
+<p>控制块会使用的虚函数机制，但通常情况下只有在每个托管给std::shared_ptr的对象使用一次：在该对象析构的时候。</p>
+<h3 id="对类似std-shared-ptr但有可能空悬的指针使用std-weak-ptr"><a href="#对类似std-shared-ptr但有可能空悬的指针使用std-weak-ptr" class="headerlink" title="对类似std::shared_ptr但有可能空悬的指针使用std::weak_ptr"></a>对类似std::shared_ptr但有可能空悬的指针使用std::weak_ptr</h3><p>可以像std::shared_ptr那样使用且不涉及对象生存期管理的对象，使用std::wake_ptr。</p>
+<p>通常由std::shared_ptr指针创建，不能提领，也不能检查是否为空。</p>
+<p>其可检测所指的对象生存期是否结束：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(wpw.expired()) <span class="comment">//失效返回true</span></span><br></pre></td></tr></table></figure>
+<p>在使用时要先转换为std::shared_ptr使用，有两种方式可以原子地进行转换：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Widget&gt; spw1 = wpw.lock();</span><br><span class="line"><span class="keyword">auto</span> spw2 = wpw.lock(); 	<span class="comment">// 等价于上面，如果wpw中对象已经过期了，则spw1和spw2指向nullptr</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Widget&gt; <span class="title">spw3</span><span class="params">(wpw)</span></span>; <span class="comment">//如果wpw中对象过期，抛出异常std::bad_weak_ptr</span></span><br></pre></td></tr></table></figure>
+<p>其用来做缓存，取出大体积数据对象时，其可将对象缓存在内存中，以便下次存取。如下述代码所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;<span class="keyword">const</span> Widget&gt; <span class="title">fastLoadWidget</span><span class="params">(WidgetID id)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">std</span>::unorderd_map&lt;WidgetID, <span class="built_in">std</span>::weak_ptr&lt;<span class="keyword">const</span> Widget&gt;&gt; cache;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">auto</span> objPtr = cache[id].lock();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(!objPtr)&#123;</span><br><span class="line">        objPtr = loadWidget(id);</span><br><span class="line">        cache[id] = objPtr;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> objPtr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>std::weak_ptr也可用在观察者模式中，在主题中存储观察者列表，在其有效时进行消息推送。</p>
+<p>std::weak_ptr也用在避免指针循环引用上，考虑两个std::shared_ptr互相指向，导致两者的对象都无法正确完成析构动作，此时一方换成std::weak_ptr即可将循环引用消除。</p>
+<p>std::weak_ptr和std::shared_ptr本质上相同的，其中均包含两个指针一个指向对象，一个指向控制块，其构造、析构、赋值操作都包含了对引用计数的原子操作，std::weak_ptr不参与干涉对象的共享所有权，因此不会影响到对象的引用计数，但控制块中还有第二个引用计数，std::weak_ptr所操作的即是该引用计数。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/03/10/%E8%BD%AC%E5%90%91%E7%8E%B0%E4%BB%A3Cpp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Chauncy">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chauncy's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/10/%E8%BD%AC%E5%90%91%E7%8E%B0%E4%BB%A3Cpp/" class="post-title-link" itemprop="url">转向现代Cpp</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-03-10 21:38:33 / Modified: 22:30:51" itemprop="dateCreated datePublished" datetime="2021-03-10T21:38:33+08:00">2021-03-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cpp/" itemprop="url" rel="index"><span itemprop="name">Cpp</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>现代C++，一般指的时C++11之后的版本，虽然说称作现代C++但距现在也已经有十年之久了，C++版本在这之后又经历了C++14，C++17以及C++20。新增的东西很多，比如协程，结构化绑定等都在之后加入了C++语法或标准库之中，此处仅以Meyers这本书上介绍的内容进行归纳，更多内容在学习完本书之后再进行补充。</p>
+<h2 id="在创建对象时注意区分（）和"><a href="#在创建对象时注意区分（）和" class="headerlink" title="在创建对象时注意区分（）和{}"></a>在创建对象时注意区分（）和{}</h2><p>在C++里区分初始化语义和赋值语义一直是一个绕不开的话题，如以下代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> x&#123;<span class="number">0</span>&#125;; 	<span class="comment">// 初始化</span></span><br><span class="line"><span class="keyword">int</span> y = <span class="number">0</span>;	<span class="comment">// 初始化</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">z</span><span class="params">(<span class="number">0</span>)</span></span>;	<span class="comment">// 初始化</span></span><br></pre></td></tr></table></figure>
+<p>如上所示，上述三者都是初始化而非赋值，我们此处所讲的也即关于初始化的问题。</p>
+<blockquote>
+<p> C++11引入了统一初始化：即单一、至少上从概念上可以用于一切场合，表达一切意思的初始化。其基础是大括号形式，因此也可以称之为<strong>大括号初始化</strong> </p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v&#123;<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>&#125;; <span class="comment">// 创建一个vec,其中包含三个元素1，3，5</span></span><br></pre></td></tr></table></figure>
+<p>从下属两个个代码实例中，我们可以看出<strong>统一</strong>一词的含义</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 例1</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Widget</span>&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> x&#123;<span class="number">0</span>&#125;;	<span class="comment">//可行, x的默认值为0</span></span><br><span class="line">    <span class="keyword">int</span> y = <span class="number">0</span>;	<span class="comment">// 可行，y的默认值为0</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">z</span><span class="params">(<span class="number">0</span>)</span></span>;	<span class="comment">// 不可行,Compile Error</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 例2</span></span><br><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; ail&#123;<span class="number">0</span>&#125;; <span class="comment">// 可行，默认值为0</span></span><br><span class="line"><span class="function"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; <span class="title">ai2</span><span class="params">(<span class="number">0</span>)</span></span>; <span class="comment">// 可行</span></span><br><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; ai3 = <span class="number">0</span>; <span class="comment">// 不可行</span></span><br></pre></td></tr></table></figure>
+<p>从上述例子中我们可以看出，只有{}可以在任意的初始化时被使用，而是用其他的方式均不是很通用。</p>
+<p>且大括号初始化会避免类型的隐式窄化操作，比如大括号用double类型字面值来初始化int类型变量，就会在编译期报错，而小括号和等号均无此限制。</p>
+<p>使用大括号可以很好的避免出现<strong>最令人苦恼的解析语法</strong>，考虑如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Widget <span class="title">w1</span><span class="params">(<span class="number">21</span>)</span></span>; <span class="comment">// 创建一个Widget对象，调用其接受一个参数的构造函数</span></span><br><span class="line"><span class="function">Widget <span class="title">w2</span><span class="params">()</span></span>; <span class="comment">// 声明了一个名为w2的函数，其返回值时Widget类型。</span></span><br></pre></td></tr></table></figure>
+<p>在上述情况下，我们可能想要创建一个对象但最终得到的结果却事与愿违。使用大括号初始化便可以避免此类错误。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Widget w2&#123;&#125;; <span class="comment">//没问题，创建了一个Widget类型的对象w2</span></span><br></pre></td></tr></table></figure>
+<p>但大括号初始化在某种情况下会出现令人迷惑的结果，其发生于与std::initalizer_list及构造函数连用的情况下，这种情况下就会出现重载决议方面的问题。</p>
+<p>考虑如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Widget</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Widget(<span class="keyword">int</span> i, <span class="keyword">bool</span> b);</span><br><span class="line">    Widget(<span class="keyword">int</span> i, <span class="keyword">double</span> d);</span><br><span class="line">    Widget(<span class="built_in">std</span>::<span class="built_in">initializer_list</span>&lt;<span class="keyword">long</span> <span class="keyword">double</span>&gt; il);</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">Widget <span class="title">w1</span><span class="params">(<span class="number">10</span>, <span class="literal">true</span>)</span></span>; <span class="comment">// 调用第一个构造函数</span></span><br><span class="line">Widget w2&#123;<span class="number">10</span>, <span class="literal">true</span>&#125;; <span class="comment">//使用大括号，调用std::initializer_list构造函数,10和true被转化为long double</span></span><br><span class="line"><span class="function">Widget <span class="title">w3</span><span class="params">(<span class="number">10</span>, <span class="number">5.0</span>)</span></span>; <span class="comment">// 调用第二个构造函数</span></span><br><span class="line">Widget w2&#123;<span class="number">10</span>, <span class="number">5.0</span>&#125;; <span class="comment">//使用大括号，调用std::initializer_list构造函数,10和5.0被转化为long double</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，在使用大括号进行初始化，并且含有std::initializer_list构造函数时，其重载决议始终指向了std::initializer_list构造函数。赋值构造函数和移动构造函数在类中存在向某一类型转换的情况下也会被该构造函数劫持导致无法重载到正确的构造函数。并且即使重载函数中存在最优匹配大括号初始化也会将其忽视，并定位到std::initializer_list构造函数，考虑前面介绍的，在大括号初始化时如果出现类型隐式类型窄化的情况就会发生编译错误导致代码无法通过编译。只有在找不到任何方法可以把大括号中的类型转化为std::initialzer_list模板中的类型时，才会退回去使用普通的重载决议，比如std::initializer_list构造函数的模板类型为string而大括号中为{int，bool}这种情况。</p>
+<p>最后在使用空大括号进行初始化的情况下会使用默认构造函数而非std::initializer_list构造函数，这是语言规定所致。</p>
+<p>从上述讨论中得到了两个主要的结论：</p>
+<blockquote>
+<p>首先如果是一个类的作者，你需要有清醒的意识。了解自己撰写的一组重载构造函数中只有一个或多个声明了任何一个具备std::initializer_list型别的形参，则使用了大括号初始化的客户代码可能只会发现那些std::initializer_list型别的重载版本。</p>
+<p>如果你是一个开发类客户代码的程序员，在创建对象时选用一对小括号还是大括号要三思而后行。</p>
+</blockquote>
+<p>但作为模板开发程序员，使用大括号还是小括号是一件头疼的事情，考虑以下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> ...Ts&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">(Ts&amp;&amp;... params)</span></span>&#123;</span><br><span class="line">    <span class="comment">//利用params创建局部对象T</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>doSomeWork函数中创建局部T类型对象的情况有两种：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">T localObject&#123;<span class="built_in">std</span>::forward&lt;Ts&gt;(params)...&#125;;</span><br><span class="line"><span class="function">T <span class="title">localObject</span><span class="params">(<span class="built_in">std</span>::forward&lt;Ts&gt;(params)...)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>上述代码中分别使用大括号和小括号对localObject进行了初始化，但当传递如下代码时会产生不同的效果：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v;</span><br><span class="line">doSomeWork&lt;<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt;(<span class="number">10</span>, <span class="number">20</span>);</span><br></pre></td></tr></table></figure>
+<p>如果使用大括号，则创建对象中包含两个元素{10， 20}，而使用小括号则会创建拥有十个元素为20的对象。</p>
+<p>所以在该类情况下最好使用文档来告知使用者模板中的括号选择问题。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://chauncy.github.io/2021/03/08/auto/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Chauncy">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chauncy's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/08/auto/" class="post-title-link" itemprop="url">auto</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-03-08 10:12:00" itemprop="dateCreated datePublished" datetime="2021-03-08T10:12:00+08:00">2021-03-08</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-10 21:45:00" itemprop="dateModified" datetime="2021-03-10T21:45:00+08:00">2021-03-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cpp/" itemprop="url" rel="index"><span itemprop="name">Cpp</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>现在来讲为什么要使用auto，或者说推荐使用auto</p>
+<blockquote>
+<p>对应条款5: 优先选用auto, 而非显式型别声明</p>
+</blockquote>
+<p>最简单的理由就是使用auto可以少打很多复杂的型别: 如下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> It&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dwim</span><span class="params">(It b, It e)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(b != e)&#123;</span><br><span class="line">        <span class="keyword">typename</span> <span class="built_in">std</span>::iterator_traits&lt;It&gt;::value_type</span><br><span class="line">            currValue = *b;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到上述例子中的currValue型别需要我们写上很长一段的声明,而且因为value_type在是一个模板内的型别,因此还要加上typename。使用auto我们可将代码改写为以下形式:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> It&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dwim</span><span class="params">(It b, It e)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(b != e)&#123;</span><br><span class="line">        <span class="keyword">auto</span> currValue = *b;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们使用auto将型别推导的任务交给了编译器执行。</p>
+<p>并且auto变量在定义时必须进行初始化，因此其避免了一些因未初始化变量带来的麻烦。</p>
+<p>使用auto我们可以使用我们无从知晓的类型，比如在声明一个lambda函数时，我们无法知道其具体的型别，因此可以使用auto来进行推断。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> derefUPLess = </span><br><span class="line">    [](<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;Widget&gt;&amp; p1, </span><br><span class="line">       <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;Widget&gt;&amp; p2)&#123;</span><br><span class="line">    	<span class="keyword">return</span> *p1 &lt; *p2;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>在上述例子中可以使用std::function对象来对闭包进行定义。但std::function对象是一个具体的对象，其具有固定的尺寸，其尺寸对于存储闭包来说未必合适，因此其可能进行动态内存分配来提供额外的空间存储闭包，造成效率的下降。</p>
+<p>使用auto也可使代码的可移植性增加。</p>
+<p>在某些情况下，程序员对于型别类型可能出现误判，考虑如下例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">unordered_map</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, <span class="keyword">int</span>&gt; m;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">pair</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, <span class="keyword">int</span>&gt;&amp; p : m)&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上述代码中，for_each循环使用了引用来接受每个unordered_map中的成员，可以认为是为了避免拷贝的发生，但此处出现了型别的错误。在std::unordered_map中key部分是const的所以真正的型别因改为const std::pair&lt;const std::string, int&gt;&amp; p。现在考虑当错误发生的时候会导致的后果，程序会尽力找到从const std::pair &lt;const std::string,int&gt; 向 const std::pair&lt;std::string, int&gt; 转型的动作，这个过程中会产生临时对象，绑定到引用之上，发生了意料之外的拷贝动作，导致效率的下降。而使用auto&amp;便不会出现该种情况。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">const</span> <span class="keyword">auto</span>&amp; p : m)&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码中p的型别被正确推导。</p>
+<blockquote>
+<p>下述内容对应条款6: 当auto推导的型别不符合要求时,使用带显式型别的初始化物习惯用法</p>
+</blockquote>
+<p>当出现代理类的时候,auto推导型别出现了问题。比如大名鼎鼎的std::vector&lt;bool&gt;，其使用operator[]的返回值并非一个bool值而是一个称之为std::vector&lt;bool&gt;::reference的型别，其被声明在了std::vector&lt;bool&gt;中。问题出现在如下代码之中：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 假设我们有一个函数</span></span><br><span class="line"><span class="function"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">bool</span>&gt; <span class="title">features</span><span class="params">(<span class="keyword">const</span> Widget&amp; w)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//可以很明确的看出其返回一个std::vector&lt;bool&gt;, 此时考虑如下调用</span></span><br><span class="line"><span class="keyword">auto</span> highPriority = features(w)[<span class="number">5</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//此时highPriority为std::vector&lt;bool&gt;::reference对象</span></span><br></pre></td></tr></table></figure>
+<p>上述问题的关键在与，在某些实现中，std::vector&lt;bool&gt;::reference的实现为一个指针指向底层表示bool值的bit，但此时features返回值为一个临时对象，在语句结束后，就会析构，因此此时highPriority所保有的对象变成了一个空悬指针，再使用他就会产生未定义行为。</p>
+<p>一个普遍的规律时隐形代理类和auto无法和平共处，因此要避免auto和隐形代理类一同使用。</p>
+<p>但在实际情况下，代理类很难去侦测到。此时的问题并不在于auto，而在与其没有推断出想要推导的类型，解决方法进行一次显式的型别转换，称之为<strong>带显式型别的初始化物习惯用法</strong>。上述代码中函数调用部分可改为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> highPriority = <span class="keyword">static_cast</span>&lt;<span class="keyword">bool</span>&gt;(features(w)[<span class="number">5</span>]);</span><br></pre></td></tr></table></figure>
+<p>这种用法可以推广到希望从函数调用的型别转向其他型别的auto推导过程，如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回double的函数</span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">calcEpsilon</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 带有显式降低函数返回值精度语义的声明法</span></span><br><span class="line"><span class="keyword">auto</span> ep = <span class="keyword">static_cast</span>&lt;<span class="keyword">float</span>&gt;(calcEpsilon());</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同理有double -&gt; int</span></span><br><span class="line"><span class="keyword">auto</span> index = <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(d * c.size());</span><br></pre></td></tr></table></figure>
+<p>总结：</p>
+<p>使用auto的好处大概可分为两类，一类是减轻程序员的思想和身体负担，不用再去思考某些型别具体是什么，也不用在再某些型别上费时费力写上一长串的型别声明或加不加typename等。二则是减少了程序出错的可能性和增加了程序的可移植性，当平台发生改变时，某些型别如size_t的底层会发生改变此时若采用auto则可不必理会其中的变化。在程序一处的修改也会借由auto传播到程序中的所有地方，这一点和宏常量有着一些相似的地方。减少了程序员对型别的干预也避免了某些错误或导致性能下降的因素，如上例所示。</p>
+<p>但auto在配合代理类使用的情况下表现并不如人意，因此在使用代理类的情况下可借由带显式型别初始化习惯法来将结果指向期望的型别。</p>
+<p>扩展 </p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/25148592">蓝色大佬的一篇关于auto和forloop使用的文章</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
